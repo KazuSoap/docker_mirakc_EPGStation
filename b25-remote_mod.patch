@@ -1,0 +1,58 @@
+diff -ur rec10.orig/b25-remote/b25-server.cpp rec10/b25-remote/b25-server.cpp
+--- rec10.orig/b25-remote/b25-server.cpp	2020-06-13 20:16:34.169463194 +0900
++++ rec10/b25-remote/b25-server.cpp	2020-06-10 00:21:58.052769653 +0900
+@@ -9,6 +9,7 @@
+ 		printf("サーバの起動に失敗しました。\nTCPポートまたはカードリーダをオープンできません。\n");
+ 		return TRUE;
+ 	}
+-	getchar();
++	// getchar(); // comment out
++	m_CasServer.WaitServer(); // add
+ }
+
+diff -ur rec10.orig/b25-remote/CasServer.cpp rec10/b25-remote/CasServer.cpp
+--- rec10.orig/b25-remote/CasServer.cpp	2020-06-13 20:16:34.169463194 +0900
++++ rec10/b25-remote/CasServer.cpp	2020-06-10 00:19:11.285822145 +0900
+@@ -70,6 +70,17 @@
+ 	return m_ClientList.size();
+ }
+
++// add {{{
++void CCasServer::WaitServer(void)
++{
++	// スレッドハンドル開放
++	if(m_hServerThread){
++		pthread_join(m_hServerThread, NULL);
++		m_hServerThread = NULL;
++	}
++}
++// }}}
++
+ void CCasServer::OnCasClientEvent(CCasClient *pClient, const DWORD dwEventID, PVOID pParam)
+ {
+ 	CBlockLock AutoLock(&m_Lock);
+diff -ur rec10.orig/b25-remote/CasServer.h rec10/b25-remote/CasServer.h
+--- rec10.orig/b25-remote/CasServer.h	2020-06-13 20:16:34.169463194 +0900
++++ rec10/b25-remote/CasServer.h	2020-06-10 00:19:37.849653122 +0900
+@@ -35,7 +35,8 @@
+
+ 	const BOOL OpenServer(const WORD wServerPort);
+ 	void CloseServer(void);
+-	
++	void WaitServer(void); // add
++
+ 	const DWORD GetClientNum(void) const;
+
+ protected:
+diff -ur rec10.orig/b25-remote/SmartSock.cpp rec10/b25-remote/SmartSock.cpp
+--- rec10.orig/b25-remote/SmartSock.cpp	2020-06-13 20:16:34.169463194 +0900
++++ rec10/b25-remote/SmartSock.cpp	2020-06-13 19:05:30.436641557 +0900
+@@ -98,7 +98,7 @@
+ 	}
+
+ 	// 非同期コネクト
+-	u_long nArg;
++	unsigned long nArg;
+ 	fd_set FdSet;
+ 	struct timeval TimeVal;
+ 	TimeVal.tv_sec = 10UL;
