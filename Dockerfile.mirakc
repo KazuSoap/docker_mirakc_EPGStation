@@ -8,6 +8,7 @@ RUN set -eux && \
         build-essential \
         ca-certificates \
         cmake \
+        git \
         libpcsclite-dev \
         make \
         patch \
