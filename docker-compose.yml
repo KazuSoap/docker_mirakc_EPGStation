@@ -1,0 +1,109 @@
+services:
+  mirakc:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mirakc
+    image: kazusoap/mirakc:debian
+    container_name: mirakc
+    cap_add:
+      - SYS_ADMIN
+      - SYS_NICE
+    environment:
+      TZ: ${TZ:?err}
+      # Enable logging messages from mirakc.
+      # See docs/logging.md for details.
+      #
+      # Setting `mirakc=debug` is needed if you like to see messages from child
+      # processes.
+      RUST_LOG: info,mirakc=debug
+      # Enable logging messages from child processes without timestamps.
+      #
+      # The log levels of `filter-service` and `filter-program` are `debug`,
+      # otherwise `info`.
+      #
+      # Normally, you don't need to define the following environment variables.
+      MIRAKC_DEBUG_CHILD_PROCESS: 1
+      #MIRAKC_ARIB_LOG: info,filter-service=debug,filter-program=debug
+      #MIRAKC_ARIB_LOG_NO_TIMESTAMP: 1
+    ports:
+      - ${MIRAKC_PORT:?err}:${MIRAKC_PORT:?err}
+      - ${BCAS_LINK_PORT:?err}:${BCAS_LINK_PORT:?err}
+    networks:
+      - mirakc_net
+    devices:
+      - /dev/bus:/dev/bus
+      - /dev/pt3video0:/dev/pt3video0
+      - /dev/pt3video1:/dev/pt3video1
+      - /dev/pt3video2:/dev/pt3video2
+      - /dev/pt3video3:/dev/pt3video3
+    volumes:
+      - mirakc_epg:/var/lib/mirakc/epg
+      - /etc/localtime:/etc/localtime:ro
+      - ./for_deploy/mirakc/config.yml:/etc/mirakc/config.yml:ro
+      # - ./startup.sh:/usr/local/bin/startup.sh:ro
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: 10m
+    # entrypoint: ""
+    # command: "tail -f /dev/null"
+
+  mysql:
+    image: mariadb:10.5
+    environment:
+      TZ: ${TZ:?err}
+      MYSQL_USER: epgstation
+      MYSQL_PASSWORD: epgstation
+      MYSQL_ROOT_PASSWORD: epgstation
+      MYSQL_DATABASE: epgstation
+    networks:
+      - mirakc_net
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mysql_db:/var/lib/mysql
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --performance-schema=false --expire_logs_days=1 # for mariadb
+
+  epgstation:
+    depends_on:
+      - mirakc
+      - mysql
+    image: l3tnun/epgstation:debian
+    environment:
+      TZ: ${TZ:?err}
+    ports:
+      - ${EPGSTATION_PORT1:?err}:${EPGSTATION_PORT1:?err}
+      - ${EPGSTATION_PORT2:?err}:${EPGSTATION_PORT2:?err}
+    networks:
+      - mirakc_net
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./for_deploy/epgstation/config:/app/config
+      - ./for_deploy/epgstation/data:/app/data
+      - ./for_deploy/epgstation/thumbnail:/app/thumbnail
+      - ./for_deploy/epgstation/logs:/app/logs
+      - /mnt/exthd1/data/video:/app/recorded
+    restart: always
+
+networks:
+  mirakc_net:
+    name: mirakc_net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DTV_SUBNET:?err}
+
+volumes:
+  mirakc_epg:
+    name: mirakc_epg
+    driver: local
+  mysql_db:
+    name: mysql_db
+    driver: local
