@@ -47,7 +47,7 @@ services:
       options:
         max-file: "1"
         max-size: 10m
-    # entrypoint: ""
+    entrypoint: ""
     command: "/usr/local/bin/startup.sh"
 
   mysql:
