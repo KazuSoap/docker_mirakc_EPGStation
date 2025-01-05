@@ -71,10 +71,14 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --performance-schema=false --expire_logs_days=1 # for mariadb
 
   epgstation:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.epgstation
+    image: kazusoap/epgstation:debian
+    container_name: epgstation
     depends_on:
       - mirakc
       - mysql
-    image: l3tnun/epgstation:debian
     environment:
       TZ: ${TZ:?err}
     ports:
