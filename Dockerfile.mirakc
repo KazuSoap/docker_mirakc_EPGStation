@@ -47,6 +47,7 @@ RUN set -eux && \
     apt-get install -y --no-install-recommends \
         libpcsclite1 \
         pcscd \
+        pcsc-tools \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
