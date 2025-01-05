@@ -48,7 +48,7 @@ services:
         max-file: "1"
         max-size: 10m
     # entrypoint: ""
-    # command: "tail -f /dev/null"
+    command: "/usr/local/bin/startup.sh"
 
   mysql:
     image: mariadb:10.5
