@@ -76,31 +76,32 @@ channels:
   - name: NHK BS
     type: BS
     channel: BS15_0
-    services: [101]
+    services: [101, 102]
   - name: BS日テレ
     type: BS
     channel: BS13_0
-    services: [141]
+    services: [141, 142]
   - name: BS朝日
     type: BS
     channel: BS01_0
-    services: [151]
+    services: [151, 152]
   - name: BS-TBS
     type: BS
     channel: BS01_1
-    services: [161]
+    services: [161, 162]
   - name: BSテレ東
     type: BS
     channel: BS01_2
-    services: [171]
+    services: [171, 172]
   - name: BSフジ
     type: BS
     channel: BS13_1
-    services: [181]
+    services: [181, 182]
   - name: BS10 (200:無料)・BS10スターチャンネル(201:有料)
     type: BS
     channel: BS15_1
-    services: [200]
+    services: [200, 201]
+    excluded-services: [201]
   - name: BS11
     type: BS
     channel: BS09_0
