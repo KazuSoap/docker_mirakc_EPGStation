@@ -92,7 +92,7 @@ services:
       - ./for_deploy/epgstation/data:/app/data
       - ./for_deploy/epgstation/thumbnail:/app/thumbnail
       - ./for_deploy/epgstation/logs:/app/logs
-      - /mnt/exthd1/data/video:/app/recorded
+      - /mnt/exthd1/data/video/recorded:/app/recorded
     restart: always
 
 networks:

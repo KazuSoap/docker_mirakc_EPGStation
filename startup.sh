@@ -1,5 +1,22 @@
 #!/bin/bash
 
+postproc() {
+  echo "terminating..."
+
+  pids=$(jobs -p)
+  [ -n "$pids" ] && kill $pids
+
+  if [ -e "/etc/init.d/pcscd" ]; then
+    echo "stopping pcscd..."
+    /etc/init.d/pcscd stop
+    sleep 1
+  fi
+
+  exit
+}
+
+trap postproc INT TERM EXIT
+
 if [ -e "/etc/init.d/pcscd" ]; then
   while :; do
     echo "starting pcscd..."
@@ -18,9 +35,3 @@ b25-server &
 
 echo "starting mirakc..."
 /usr/local/bin/mirakc
-
-if [ -e "/etc/init.d/pcscd" ]; then
-  echo "stopping pcscd..."
-  /etc/init.d/pcscd stop
-  sleep 1
-fi
