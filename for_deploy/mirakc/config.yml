@@ -153,7 +153,7 @@ channels:
     type: BS
     channel: BS15_1
     services: [201]
-    excluded-services: [201]
+    disabled: true
   - name: グリーンチャンネル
     type: BS
     channel: BS21_2
