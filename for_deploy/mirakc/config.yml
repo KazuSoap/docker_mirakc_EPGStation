@@ -115,11 +115,10 @@ channels:
     channel: BS13_1
     services: [181]
     #excluded-services: [182, 183]
-  - name: BS10 (200:無料)・BS10スターチャンネル(201:有料)
+  - name: BS10
     type: BS
-    channel: BS15_1
-    services: [200, 201]
-    excluded-services: [201]
+    channel: BS15_2
+    services: [200]
   - name: BS11
     type: BS
     channel: BS09_0
@@ -150,6 +149,11 @@ channels:
     channel: BS05_1
     services: [193]
     disabled: true
+  - name: BS10スターチャンネル
+    type: BS
+    channel: BS15_1
+    services: [201]
+    excluded-services: [201]
   - name: グリーンチャンネル
     type: BS
     channel: BS21_2
