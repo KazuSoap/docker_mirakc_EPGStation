@@ -125,7 +125,7 @@ channels:
     services: [211]
   - name: TwellV
     type: BS
-    channel: BS09_2
+    channel: BS09_1
     services: [222]
   - name: 放送大学BS
     type: BS
